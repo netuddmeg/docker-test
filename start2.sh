@@ -49,8 +49,8 @@ docker-machine create --driver digitalocean --digitalocean-access-token $DOTOKEN
 
 #install some stuff on the VPS
 docker-machine ssh $DOCKERMACHINE "export DEBIAN_FRONTEND=noninteractive && \
-										sudo apt-get install -y \
-										git;"
+								sudo apt-get install -y \
+								git;"
 										
 
 # set environment
@@ -58,6 +58,8 @@ eval $(docker-machine env $DOCKERMACHINE);
 
 #finally clone the repo and build&up
 git clone $REPO;
-cd $REPODIR; git pull; docker-compose up --build;
+cd $REPODIR; git pull; docker-compose up -d --build;
+
+echo "Your VPS's IP address is: `docker-machine ip docker-sandbox`"
 
 
