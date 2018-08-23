@@ -4,7 +4,7 @@ PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
 DMURL="https://github.com/docker/machine/releases/download/v0.15.0";
 DCURL="https://github.com/docker/compose/releases/download/1.22.0"
 REPODIR="my_first_docker_prod";
-DOCKERMACHINE="docker-sandbox-swarm";
+DOCKERMACHINE="docker-sandbox";
 REPO="https://github.com/netuddmeg/my_first_docker_prod.git";
 PROJECTNAME="my_first_docker_project";
 DPATH="/usr/local/bin/";
@@ -33,15 +33,14 @@ fi;
 	        DOTOKEN=$token;
 		docker-machine create --driver digitalocean --digitalocean-access-token $DOTOKEN $DOCKERMACHINE;
 
-		docker-machine ssh $DOCKERMACHINE "export DEBIAN_FRONTEND=noninteractive && sudo apt-get install git -y";
+		docker-machine ssh $DOCKERMACHINE "export DEBIAN_FRONTEND=noninteractive && \
+										sudo apt-get install git npm -y && \
+										sudo npm install express;"
+
 #		docker-machine ssh $DOCKERMACHINE "curl -L $DMURL/docker-machine-$(uname -s)-$(uname -m) > $DPATH/docker-machine && chmod +x $DPATH/docker-machine";
 		eval $(docker-machine env $DOCKERMACHINE);
 
-#		if [ ! -f "/usr/local/bin/docker-compose" ] ; then
-#			docker-machine ssh $DOCKERMACHINE "curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) > $DPATH/docker-compose;sudo chmod +x $DPATH/docker-compose";
-#		fi;
-
-#		git clone $REPO;
+		git clone $REPO;
 		cd $REPODIR; git pull; docker-compose up --build;
 
 
