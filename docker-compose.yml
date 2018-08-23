@@ -3,20 +3,20 @@ services:
   backend1:
       build: ./backend
       tty: true
-      volumes:
-        - './backend/src:/backend-dir-inside-container'
+#      volumes:
+#        - './backend/src:/backend-dir-inside-container'
 
   backend2:
       build: ./backend
       tty: true
-      volumes:
-        - './backend/src:/backend-dir-inside-container'
+#     volumes:
+#        - './backend/src:/backend-dir-inside-container'
 
   backend3:
       build: ./backend
       tty: true
-      volumes:
-        - './backend/src:/backend-dir-inside-container'               
+#      volumes:
+#        - './backend/src:/backend-dir-inside-container'               
 
   loadbalancer:
       build: ./load-balancer
@@ -28,5 +28,5 @@ services:
       ports:
           - '80:80'
 
-volumes:
-  backend:
+#volumes:
+#  backend:
