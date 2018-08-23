@@ -9,38 +9,55 @@ REPO="https://github.com/netuddmeg/docker-test.git";
 PROJECTNAME="docker-test";
 DPATH="/usr/local/bin/";
 
-export DEBIAN_FRONTEND=noninteractive && sudo apt install \
+# installing some stuff
+export DEBIAN_FRONTEND=noninteractive && sudo apt install -y \
 	apt-transport-https \
 	ca-certificates \
+	git \
 	curl \
 	software-properties-common;
 
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
+# if docker(-ce) does not exist, install!
+if [ ! -d "/usr/share/docker-ce"  ] ; then
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
 	sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
 	sudo apt-get update && sudo apt-get install docker-ce -y;
-
-if [ ! -f "/usr/local/bin/docker-machine"  ] ; then
-        sudo curl -L $DMURL/docker-machine-$(uname -s)-$(uname -m) > /tmp/docker-machine && sudo cp /tmp/docker-machine $DPATH/docker-machine && sudo chmod +x $DPATH/docker-machine;
 fi;
 
+# if docker-machine does not exist, install!
+if [ ! -f "/usr/local/bin/docker-machine"  ] ; then
+	sudo curl -L $DMURL/docker-machine-$(uname -s)-$(uname -m) > /tmp/docker-machine && sudo cp /tmp/docker-machine $DPATH/docker-machine && sudo chmod +x $DPATH/docker-machine;
+fi;
+
+# if docker-compose does not exist, install!
 if [ ! -f "/usr/local/bin/docker-compose"  ] ; then
 	sudo curl -L $DCURL/docker-compose-$(uname -s)-$(uname -m) > /tmp/docker-compose && sudo cp /tmp/docker-compose $DPATH/docker-compose && sudo chmod +x $DPATH/docker-compose;
 fi;
 
-
+			#token must be entered in case of DigitalOcean provider
         	echo -n "Please, enter your token here [ENTER]: ";
 	        read token;
-	        DOTOKEN=$token;
-		docker-machine create --driver digitalocean --digitalocean-access-token $DOTOKEN $DOCKERMACHINE;
 
-		docker-machine ssh $DOCKERMACHINE "export DEBIAN_FRONTEND=noninteractive && \
-										sudo apt-get install git -y;"
+	        	if [ -z "$token" ]; then
+	        		echo "You have must enter your token!";
+	        		exit 1;
+	        	fi;
+
+	        DOTOKEN=$token;
+# create a VPS in the provider
+docker-machine create --driver digitalocean --digitalocean-access-token $DOTOKEN $DOCKERMACHINE;
+
+#install some stuff on the VPS
+docker-machine ssh $DOCKERMACHINE "export DEBIAN_FRONTEND=noninteractive && \
+										sudo apt-get install -y \
+										git;"
 										
 
-#		docker-machine ssh $DOCKERMACHINE "curl -L $DMURL/docker-machine-$(uname -s)-$(uname -m) > $DPATH/docker-machine && chmod +x $DPATH/docker-machine";
-		eval $(docker-machine env $DOCKERMACHINE);
+# set environment
+eval $(docker-machine env $DOCKERMACHINE);
 
-		git clone $REPO;
-		cd $REPODIR; git pull; docker-compose up --build;
+#finally clone the repo and build&up
+git clone $REPO;
+cd $REPODIR; git pull; docker-compose up --build;
 
 
