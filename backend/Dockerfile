@@ -15,4 +15,7 @@ HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:80 || ex
 
 # Our Nginx container will forward HTTP traffic to containers of 
 # this image via port 3000.
+
+CMD ["/usr/local/bin/node","index.js"]
+
 EXPOSE 3000
