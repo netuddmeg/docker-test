@@ -9,7 +9,7 @@ services:
   backend2:
       build: ./backend
       tty: true
-     volumes:
+      volumes:
         - './backend/src:/backend-dir-inside-container'
 
   backend3:
